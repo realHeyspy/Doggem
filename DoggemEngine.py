@@ -3,7 +3,9 @@ import numpy as np
 """
 this class is responsible for storing all the information about current state 
 """
-
+'''
+error when move before append
+'''
 
 class GameState():
     def __init__(self):
@@ -144,7 +146,7 @@ class Move():
         self.endRow = endSq[0]
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
-        self.pieceCaptured = board[self.endCol][self.endRow]
+        self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
     '''Overriding equal move'''
