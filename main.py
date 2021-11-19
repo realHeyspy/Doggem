@@ -4,7 +4,9 @@ this for handing input and displaying current GameState
 """
 
 import pygame as p
-import DoggemEngine, SmartMoveFinder
+
+import DoggemEngine
+import SmartMoveFinder
 
 WIDTH = HEIGHT = 240
 DIMENSION = 4
