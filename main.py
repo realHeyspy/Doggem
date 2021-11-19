@@ -4,7 +4,7 @@ this for handing input and displaying current GameState
 """
 
 import pygame as p
-import DoggemEngine
+import DoggemEngine, SmartMoveFinder
 
 WIDTH = HEIGHT = 240
 DIMENSION = 4
@@ -30,32 +30,49 @@ def main():
     running = True
     sqSelected = ()
     playerClicks = []
+    PlayerOne = True  # if human play white this = true.If AI play this = false
+    PlayerTwo = False  # revert previous comment
     while running:
+        humanTurn = (gs.whiteToMove and PlayerOne) or (not gs.whiteToMove and PlayerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+                # mouse handler
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = location[0] // SQ_SIZE
-                row = location[1] // SQ_SIZE
-                if sqSelected == (row, col):
-                    sqSelected = ()
-                    playerClicks = []
-                else:
-                    sqSelected = (row, col)
-                    playerClicks.append(sqSelected)
-                if len(playerClicks) == 2:
-                    move = DoggemEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-                    # print(move.getDoggemNotation())
-                    if move in validMoves:  # error here validMoves null
-                        gs.makeMove(move)
-                        MoveMade = True
-                    sqSelected = ()  # reset user clicks
-                    playerClicks = []
+                if humanTurn:
+                    location = p.mouse.get_pos()
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+                    if sqSelected == (row, col):
+                        sqSelected = ()
+                        playerClicks = []
+                    else:
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected)
+                    if len(playerClicks) == 2:
+                        move = DoggemEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                        # print(move.getDoggemNotation())
+                        if move in validMoves:  # error here validMoves null
+                            gs.makeMove(move)
+                            MoveMade = True
+                        sqSelected = ()  # reset user clicks
+                        playerClicks = []
+            # key handlers
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()
                     MoveMade = True
+                if e.key == p.K_r:
+                    gs = DoggemEngine.GameState()
+                    validMoves = gs.getValidMoves()
+                    sqSelected = ()
+                    playerClicks = []
+                    MoveMade = False
+        # AI move finder
+        if not humanTurn:
+            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            MoveMade = True
         if MoveMade:
             validMoves = gs.getValidMoves()
             MoveMade = False

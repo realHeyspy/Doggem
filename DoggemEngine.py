@@ -7,6 +7,7 @@ this class is responsible for storing all the information about current state
 error when move before append
 '''
 
+
 class GameState():
     def __init__(self):
         self.board = [
@@ -98,13 +99,13 @@ class GameState():
 
     '''
      step white pawn moves
-     (#,#)         (0,1)       (#,#)
-     (-1,0)        (0,0)       (1,0)
+     (#,#)         (-1,0)       (#,#)
+     (0,-1)        (0,0)       (0,1)
      up right left
     '''
 
     def getWhitePawnMoves(self, r, c, moves):
-        whitePawnMove = ((-1, 0), (0, 1), (1, 0))
+        whitePawnMove = ((0, -1), (-1, 0), (0, 1))
         for m in whitePawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
@@ -116,14 +117,14 @@ class GameState():
 
     '''
      step black pawn moves
-     (#,#)        (0,1)       (#,#)
-     (#,#)        (0,0)       (1,0)
-     (#,#)        (0,-1)      (#,#)
+     (#,#)        (1,0)       (#,#)
+     (#,#)        (0,0)       (0,1)
+     (#,#)        (-1,0)      (#,#)
      up right down
     '''
 
     def getBlackPawnMoves(self, r, c, moves):
-        blackPawnMove = ((0, 1), (0, -1), (1, 0))
+        blackPawnMove = ((1, 0), (-1, 0), (0, 1))
         for m in blackPawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
