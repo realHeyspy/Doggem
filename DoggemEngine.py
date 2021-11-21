@@ -19,48 +19,6 @@ class GameState():
         self.movelog = []
         self.currentSize = 4
 
-    def changeBoard(self, number: int):
-        for i in range(number * number):
-            if i % number == 0 and i != (number * (number - 1)):
-                self.board[i] = "bp"
-            elif i > (number * (number - 1)):
-                self.board[i] = "wp"
-            else:
-                self.board[i] = "--"
-        self.board = np.reshape(self.board, (number, number))
-        self.whitebox = []
-        self.blackbox = []
-        self.currentSize = number
-        self.matrixSize = number * number
-        self.maxInt = self.matrixSize * 5 - 5
-        i = (number * (number - 1))
-        value = count = 0
-        while count != (number * number):
-            if (i + 1) % number == 0:
-                self.whitebox[i] = value
-                value += 5
-                i = i - (number * 2 - 1)
-                count += 1
-            else:
-                self.whitebox[i] = value
-                value += 5
-                i += 1
-                count += 1
-        value = count = 0
-        i = j = (number * (number - 1))
-        while count != number * number:
-            if j - number < 0:
-                self.blackbox[j] = value
-                value -= 5
-                j = i + 1
-                i += 1
-                count += 1
-            else:
-                self.blackbox[j] = value
-                value -= 5
-                j -= number
-                count += 1
-
     def makeMove(self, move):
         if self.board[move.startRow][move.startCol] != '--':
             self.board[move.startRow][move.startCol] = "--"
@@ -76,6 +34,11 @@ class GameState():
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove
+
+    '''return size of current board'''
+
+    def getSizeBoard(self):
+        return self.currentSize
 
     def getValidMoves(self):
         return self.getAllPossibleMoves()

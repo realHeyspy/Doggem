@@ -72,7 +72,7 @@ def main():
                     MoveMade = False
         # AI move finder
         if not humanTurn:
-            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            AIMove = SmartMoveFinder.findBestMove(gs, validMoves, 3)
             gs.makeMove(AIMove)
             MoveMade = True
         if MoveMade:
