@@ -54,13 +54,16 @@ def main():
                     elif not gs.whiteToMove and row > DIMENSION - 1:
                         sqSelected = ()
                         playerClicks = []
+                    elif len(playerClicks) == 0 and (col > DIMENSION - 1 or row > DIMENSION - 1):
+                        sqSelected = ()
+                        playerClicks = []
                     else:
                         sqSelected = (row, col)
                         playerClicks.append(sqSelected)
                     if len(playerClicks) == 2:
                         move = DoggemEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                         # print(move.getDoggemNotation())
-                        if move in validMoves:  # error here validMoves null
+                        if move in validMoves:
                             gs.makeMove(move)
                             MoveMade = True
                         sqSelected = ()  # reset user clicks

@@ -22,7 +22,7 @@ class GameState():
     def makeMove(self, move):
         if self.board[move.startRow][move.startCol] != '--':
             self.board[move.startRow][move.startCol] = "--"
-            if move.endRow == -1 or move.endCol == self.currentSize:
+            if move.endRow == -1 or move.endCol == -1:
                 self.board[move.endRow][move.endCol] = "--"
             else:
                 self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -78,7 +78,7 @@ class GameState():
             if -1 <= endRow < self.currentSize and 0 <= endCol < self.currentSize:
                 endPiece = self.board[endRow][endCol]
                 if endPiece == '--':
-                    print("white units", self.whiteToMove)
+                    # print("white units", self.whiteToMove)
                     moves.append(Move((r, c), (endRow, endCol), self.board))
 
     '''
@@ -94,10 +94,14 @@ class GameState():
         for m in blackPawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
-            if 0 <= endRow < self.currentSize and 0 <= endCol < self.currentSize:
-                endPiece = self.board[endRow][endCol]
+            if 0 <= endRow < self.currentSize and 0 <= endCol <= self.currentSize:
+                if endCol == 4:
+                    endCol = -1
+                    endPiece = "--"
+                else:
+                    endPiece = self.board[endRow][endCol]
                 if endPiece == "--":
-                    print("black units", self.whiteToMove)
+                    # print("black units", self.whiteToMove)
                     moves.append(Move((r, c), (endRow, endCol), self.board))
 
 
@@ -113,7 +117,11 @@ class Move():
         self.endRow = endSq[0]
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
-        self.pieceCaptured = board[self.endRow][self.endCol]
+        if self.endCol == 4:
+            self.endCol = -1
+            self.pieceCaptured = "--"
+        else:
+            self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
     '''Overriding equal move'''

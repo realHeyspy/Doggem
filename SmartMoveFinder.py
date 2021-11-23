@@ -8,17 +8,19 @@ def findRandomMove(validMoves):
 
 
 def findBestMove(gs, validMoves, depth):
-    compareBoard = DoggemMinMax(gs.getSizeBoard())
+    turn = "wp" if gs.whiteToMove else "bp"
+    compareBoard = DoggemMinMax(gs.getSizeBoard(), turn)
     compareBoard.createBoxCompare(gs.getSizeBoard())
     return compareBoard.minimax(gs, validMoves, depth)
 
 
 class DoggemMinMax():
-    def __init__(self, inputSize):
+    def __init__(self, inputSize, turn):
         self.currentSize = inputSize * inputSize
         self.maxInt = self.currentSize * 5 - 5
         self.whiteBox = [1] * self.currentSize
         self.blackBox = [1] * self.currentSize
+        self.turn = turn
         self.currentUnitBoard = inputSize - 1
 
     def createBoxCompare(self, inputSize):
@@ -75,9 +77,9 @@ class DoggemMinMax():
                         downPoint = 10 * (check - i - 1)
                         evalPoint += self.maxInt - downPoint
                     check += 1
-        evalPoint += currentWhiteInBoard*(self.maxInt+10)
-        evalPoint -= currentBlackInBoard * (self.maxInt + 10)
-        return abs(evalPoint)
+        evalPoint += currentWhiteInBoard * (self.maxInt + 10) * 10
+        evalPoint -= currentBlackInBoard * (self.maxInt + 10) * 10
+        return evalPoint
 
     def IsEndBoard(self, board):
         currentWhiteInBoard = self.currentUnitBoard
@@ -93,37 +95,39 @@ class DoggemMinMax():
         if depth == 0 or self.IsEndBoard(board):
             return self.eval(board)
         else:
-            FutureBoard = self.FutureChangeBoard(board, "bp")
+            FutureBoard = self.FutureChangeBoard(board, self.turn)
             minVals = []
-            maxInt = 0
+            minInt = 1000000
             for futureStatesBoard in FutureBoard:
                 minVals.append(self.maxVal(futureStatesBoard, depth - 1))
             for i in minVals:
-                if maxInt < i:
-                    maxInt = i
-            return maxInt
+                if i < minInt:
+                    minInt = i
+            return minInt
 
     def maxVal(self, board, depth):
         if depth == 0 or self.IsEndBoard(board):
             return self.eval(board)
         else:
-            FutureBoard = self.FutureChangeBoard(board, "wp")
+            turned = "wp" if self.turn == "wp" else "bp"
+            FutureBoard = self.FutureChangeBoard(board, turned)
             maxVals = []
-            minInt = 10000
+            maxInt = -1000000
             for futureStatesBoard in FutureBoard:
                 maxVals.append(self.minVal(futureStatesBoard, depth - 1))
             for i in maxVals:
-                if minInt > i:
-                    minInt = i
-            return minInt
+                if i > maxInt:
+                    maxInt = i
+            return maxInt
 
     def minimax(self, gs, validMoves, depth):
         bestMove = None
-        min = 1000000
+        min = -1000000
+        # same unit ai play
         for move in validMoves:
             board = Board(gs.board, (move.startRow, move.startCol), (move.endRow, move.endCol)).getBoard()
             maxval = self.maxVal(board, depth - 1)
-            if min >= maxval:
+            if min <= maxval:
                 min = maxval
                 bestMove = move
         return bestMove
@@ -162,8 +166,12 @@ class DoggemMinMax():
         for m in blackPawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
-            if 0 <= endRow < currentSize and 0 <= endCol < currentSize:
-                endPiece = currentBoard[endRow][endCol]
+            if 0 <= endRow < currentSize and 0 <= endCol <= currentSize:
+                if endCol == currentSize:
+                    endCol = -1
+                    endPiece = "--"
+                else:
+                    endPiece = currentBoard[endRow][endCol]
                 if endPiece == "--":
                     board.append(Board(currentBoard, (r, c), (endRow, endCol)).getBoard())
 
@@ -176,11 +184,14 @@ class Board():
         startCol = startSq[1]
         endRow = endSq[0]
         endCol = endSq[1]
-        self.pieceMoved = currentBoard[startRow][startCol]
+        if endRow == -1 or endCol == len(currentBoard):
+            self.pieceMoved = "--"
+        else:
+            self.pieceMoved = currentBoard[startRow][startCol]
         self.pieceCaptured = currentBoard[endRow][endCol]
         self.board = copy.deepcopy(currentBoard)
-        self.board[endRow][endCol] = self.pieceMoved
         self.board[startRow][startCol] = self.pieceCaptured
+        self.board[endRow][endCol] = self.pieceMoved
 
     '''return board from Move object'''
 
