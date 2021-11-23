@@ -8,9 +8,9 @@ import pygame as p
 import DoggemEngine
 import SmartMoveFinder
 
-WIDTH = HEIGHT = 240
 DIMENSION = 4
-SQ_SIZE = HEIGHT // DIMENSION
+SQ_SIZE = 60
+WIDTH = HEIGHT = SQ_SIZE * DIMENSION + SQ_SIZE
 MAX_FPS = 30
 IMAGE = {}
 
@@ -44,8 +44,14 @@ def main():
                 if humanTurn:
                     location = p.mouse.get_pos()
                     col = location[0] // SQ_SIZE
-                    row = location[1] // SQ_SIZE
+                    row = location[1] // SQ_SIZE - 1
                     if sqSelected == (row, col):
+                        sqSelected = ()
+                        playerClicks = []
+                    elif gs.whiteToMove and col > DIMENSION - 1:
+                        sqSelected = ()
+                        playerClicks = []
+                    elif not gs.whiteToMove and row > DIMENSION - 1:
                         sqSelected = ()
                         playerClicks = []
                     else:
@@ -62,7 +68,11 @@ def main():
             # key handlers
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
-                    gs.undoMove()
+                    if humanTurn:
+                        gs.undoMove()
+                        gs.undoMove()
+                    else:
+                        gs.undoMove()
                     MoveMade = True
                 if e.key == p.K_r:
                     gs = DoggemEngine.GameState()
@@ -96,12 +106,12 @@ def highlightSquare(screen, gs, validMoves, sqSelected):
             s = p.Surface((SQ_SIZE, SQ_SIZE))
             s.set_alpha(100)
             s.fill(p.Color("blue"))
-            screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
+            screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE + SQ_SIZE))
             # highlight move from that square
             s.fill(p.Color("yellow"))
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
-                    screen.blit(s, (SQ_SIZE * move.endCol, SQ_SIZE * move.endRow))
+                    screen.blit(s, (SQ_SIZE * move.endCol, SQ_SIZE * move.endRow + SQ_SIZE))
 
 
 '''
@@ -123,19 +133,23 @@ draw the squares on the board
 def drawBoard(screen):
     # colors = [p.Color("white"), p.Color("gray")]
     colors = [p.Color(238, 238, 210), p.Color(118, 150, 86)]
+    blankcolors = p.Color("white")
     for r in range(DIMENSION):
+        '''this clean move highlight left on blank column '''
+        p.draw.rect(screen, blankcolors, p.Rect((DIMENSION + 1) * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
         for c in range(DIMENSION):
             color = colors[((r + c) % 2)]
-            p.draw.rect(screen, color, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+            p.draw.rect(screen, color, p.Rect(c * SQ_SIZE, r * SQ_SIZE + SQ_SIZE, SQ_SIZE, SQ_SIZE))
+            '''this clean move highlight left on blank row  '''
+            p.draw.rect(screen, blankcolors, p.Rect(c * SQ_SIZE, 0, SQ_SIZE, SQ_SIZE))
 
 
 def drawPieces(screen, board):
-    pass
     for r in range(DIMENSION):
         for c in range(DIMENSION):
             piece = board[r][c]
             if piece != "--":
-                screen.blit(IMAGE[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+                screen.blit(IMAGE[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE + SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
 
 if __name__ == '__main__':

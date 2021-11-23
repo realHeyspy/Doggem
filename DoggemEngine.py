@@ -22,7 +22,10 @@ class GameState():
     def makeMove(self, move):
         if self.board[move.startRow][move.startCol] != '--':
             self.board[move.startRow][move.startCol] = "--"
-            self.board[move.endRow][move.endCol] = move.pieceMoved
+            if move.endRow == -1 or move.endCol == self.currentSize:
+                self.board[move.endRow][move.endCol] = "--"
+            else:
+                self.board[move.endRow][move.endCol] = move.pieceMoved
             self.movelog.append(move)
             self.whiteToMove = not self.whiteToMove  # swap player
 
@@ -72,7 +75,7 @@ class GameState():
         for m in whitePawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
-            if 0 <= endRow < self.currentSize and 0 <= endCol < self.currentSize:
+            if -1 <= endRow < self.currentSize and 0 <= endCol < self.currentSize:
                 endPiece = self.board[endRow][endCol]
                 if endPiece == '--':
                     print("white units", self.whiteToMove)

@@ -150,7 +150,7 @@ class DoggemMinMax():
         for m in whitePawnMove:
             endRow = r + m[0]
             endCol = c + m[1]
-            if 0 <= endRow < currentSize and 0 <= endCol < currentSize:
+            if -1 <= endRow < currentSize and 0 <= endCol < currentSize:
                 endPiece = currentBoard[endRow][endCol]
                 if endPiece == '--':
                     board.append(Board(currentBoard, (r, c), (endRow, endCol)).getBoard())
