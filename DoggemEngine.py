@@ -150,8 +150,10 @@ class Move():
             return self.moveID == other.moveID
         return False
 
+    # location of current player click
     def getDoggemNotation(self):
         return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
 
+    # result col and row in Move code
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRank[r]

@@ -2,9 +2,14 @@ import random
 import numpy as np
 import copy
 
+'''AI move randomly'''
+
 
 def findRandomMove(validMoves):
     return validMoves[random.randint(0, len(validMoves) - 1)]
+
+
+'''AI with minimax'''
 
 
 def findBestMove(gs, validMoves, depth):
@@ -23,6 +28,7 @@ class DoggemMinMax():
         self.turn = turn
         self.currentUnitBoard = inputSize - 1
 
+    # create compare Box automatic
     def createBoxCompare(self, inputSize):
         value = 0
         count = 0
@@ -81,6 +87,7 @@ class DoggemMinMax():
         evalPoint -= currentBlackInBoard * (self.maxInt + 10) * 8
         return evalPoint
 
+    # check if this was end game board
     def IsEndBoard(self, board):
         currentWhiteInBoard = self.currentUnitBoard
         currentBlackInBoard = self.currentUnitBoard
@@ -154,7 +161,7 @@ class DoggemMinMax():
                     self.FutureBlackPawnMoves(r, c, board, currentBoard, currentSize)
         return board
 
-    '''future white move'''
+    '''future white AI move'''
 
     def FutureWhitePawnMoves(self, r, c, board, currentBoard, currentSize):
         whitePawnMove = ((0, -1), (-1, 0), (0, 1))
@@ -166,7 +173,7 @@ class DoggemMinMax():
                 if endPiece == '--':
                     board.append(Board(currentBoard, (r, c), (endRow, endCol)).getBoard())
 
-    '''future black move'''
+    '''future black AI move'''
 
     def FutureBlackPawnMoves(self, r, c, board, currentBoard, currentSize):
         blackPawnMove = ((1, 0), (-1, 0), (0, 1))
