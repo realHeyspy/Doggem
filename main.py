@@ -33,7 +33,7 @@ def main():
     sqSelected = ()
     playerClicks = []
     PlayerOne = True  # if human play white this = true.If AI play this = false
-    PlayerTwo = False  # revert previous comment
+    PlayerTwo = False  # revert previous comment. this can be play in 2 player if both playerOne and PlayerTwo are True
     while running:
         humanTurn = (gs.whiteToMove and PlayerOne) or (not gs.whiteToMove and PlayerTwo)
         for e in p.event.get():
@@ -85,7 +85,7 @@ def main():
                     MoveMade = False
         # AI move finder
         if not humanTurn:
-            AIMove = SmartMoveFinder.findBestMove(gs, validMoves, 3)
+            AIMove = SmartMoveFinder.findBestMove(gs, validMoves, 4)
             gs.makeMove(AIMove)
             MoveMade = True
         if MoveMade:

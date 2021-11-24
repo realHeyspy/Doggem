@@ -76,7 +76,10 @@ class GameState():
             endRow = r + m[0]
             endCol = c + m[1]
             if -1 <= endRow < self.currentSize and 0 <= endCol < self.currentSize:
-                endPiece = self.board[endRow][endCol]
+                if endRow == -1:
+                    endPiece = '--'
+                else:
+                    endPiece = self.board[endRow][endCol]
                 if endPiece == '--':
                     # print("white units", self.whiteToMove)
                     moves.append(Move((r, c), (endRow, endCol), self.board))
@@ -116,9 +119,10 @@ class Move():
         self.startCol = startSq[1]
         self.endRow = endSq[0]
         self.endCol = endSq[1]
-        self.pieceMoved = board[self.startRow][self.startCol]
         if self.endCol == 4:
             self.endCol = -1
+        self.pieceMoved = board[self.startRow][self.startCol]
+        if self.endCol == 4:
             self.pieceCaptured = "--"
         else:
             self.pieceCaptured = board[self.endRow][self.endCol]

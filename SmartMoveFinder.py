@@ -77,8 +77,8 @@ class DoggemMinMax():
                         downPoint = 10 * (check - i - 1)
                         evalPoint += self.maxInt - downPoint
                     check += 1
-        evalPoint += currentWhiteInBoard * (self.maxInt + 10) * 10
-        evalPoint -= currentBlackInBoard * (self.maxInt + 10) * 10
+        evalPoint += currentWhiteInBoard * (self.maxInt + 10) * 8
+        evalPoint -= currentBlackInBoard * (self.maxInt + 10) * 8
         return evalPoint
 
     def IsEndBoard(self, board):
@@ -95,7 +95,7 @@ class DoggemMinMax():
         if depth == 0 or self.IsEndBoard(board):
             return self.eval(board)
         else:
-            FutureBoard = self.FutureChangeBoard(board, self.turn)
+            FutureBoard = self.FutureChangeBoard(board)
             minVals = []
             minInt = 1000000
             for futureStatesBoard in FutureBoard:
@@ -109,8 +109,7 @@ class DoggemMinMax():
         if depth == 0 or self.IsEndBoard(board):
             return self.eval(board)
         else:
-            turned = "wp" if self.turn == "wp" else "bp"
-            FutureBoard = self.FutureChangeBoard(board, turned)
+            FutureBoard = self.FutureChangeBoard(board)
             maxVals = []
             maxInt = -1000000
             for futureStatesBoard in FutureBoard:
@@ -122,28 +121,36 @@ class DoggemMinMax():
 
     def minimax(self, gs, validMoves, depth):
         bestMove = None
-        min = -1000000
+        turned = True if self.turn == "wp" else False
+        vals = -1000000 if turned else 1000000
         # same unit ai play
         for move in validMoves:
             board = Board(gs.board, (move.startRow, move.startCol), (move.endRow, move.endCol)).getBoard()
-            maxval = self.maxVal(board, depth - 1)
-            if min <= maxval:
-                min = maxval
-                bestMove = move
+            if turned:
+                maxval = self.maxVal(board, depth - 1)
+                if vals < maxval:
+                    vals = maxval
+                    bestMove = move
+            else:
+                minval = self.minVal(board, depth - 1)
+                if vals > minval:
+                    vals = minval
+                    bestMove = move
         return bestMove
 
     '''
     Main process future move for minimax
     '''
 
-    def FutureChangeBoard(self, currentBoard, turn):
+    def FutureChangeBoard(self, currentBoard):
         board = []
         currentSize = len(currentBoard)
         for r in range(len(currentBoard)):
             for c in range(len(currentBoard[r])):
-                if turn[0] == 'w':  # white move
+                turn = currentBoard[r][c][0]
+                if turn == 'w':  # white move
                     self.FutureWhitePawnMoves(r, c, board, currentBoard, currentSize)
-                else:  # black move
+                elif turn == 'b':  # black move
                     self.FutureBlackPawnMoves(r, c, board, currentBoard, currentSize)
         return board
 
