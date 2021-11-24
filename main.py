@@ -29,12 +29,49 @@ def main():
     validMoves = gs.getValidMoves()
     MoveMade = False
     loadImage()
+    # this response are in game
     running = True
+    # this response state endgame
+    game_over = False
+    # this response StartBoard
+    startGameWith = True
     sqSelected = ()
     playerClicks = []
     PlayerOne = True  # if human play white this = true.If AI play this = false
     PlayerTwo = False  # revert previous comment. this can be play in 2 player if both playerOne and PlayerTwo are True
+    while startGameWith:
+        labelFont = p.font.SysFont("monospace", 18)
+        whiteplay = labelFont.render("Play First", True, p.Color("black"))
+        screen.blit(whiteplay, p.Rect(SQ_SIZE / 2, HEIGHT / 2, SQ_SIZE, SQ_SIZE))
+        blackplay = labelFont.render("Play Last", True, p.Color("black"))
+        screen.blit(blackplay, p.Rect(WIDTH - (2 * SQ_SIZE), HEIGHT / 2, SQ_SIZE, SQ_SIZE))
+        p.display.flip()
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                p.quit()
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos()
+                col = location[0]
+                row = location[1]
+                if (SQ_SIZE / 2) <= col <= (3 * SQ_SIZE / 2) and (HEIGHT / 2) <= row <= (HEIGHT / 2 + SQ_SIZE):
+                    startGameWith = False
+                elif (WIDTH - (2 * SQ_SIZE)) <= col <= (WIDTH - SQ_SIZE) and (HEIGHT / 2) <= row <= (HEIGHT / 2 + SQ_SIZE):
+                    PlayerTwo = True
+                    PlayerOne = False
+                    startGameWith = False
+                    # clean background color left
+                    screen.fill(p.Color("white"))
     while running:
+        ''' control when game over reset map with similar config at start'''
+        if game_over:
+            screen.fill(p.Color("white"))
+            gs = DoggemEngine.GameState()
+            validMoves = gs.getValidMoves()
+            sqSelected = ()
+            playerClicks = []
+            MoveMade = False
+            game_over = False
+        ''' check if this are humanTurn when play with AI '''
         humanTurn = (gs.whiteToMove and PlayerOne) or (not gs.whiteToMove and PlayerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
@@ -94,6 +131,13 @@ def main():
         drawGameState(screen, gs, validMoves, sqSelected)
         clock.tick(MAX_FPS)
         p.display.flip()
+        if gs.checkEndGame():
+            game_over = True
+            turnWin = "BLACK WIN" if gs.whiteToMove else "WHITE WIN"
+            show_go_screen(screen, turnWin, running)
+        elif len(validMoves) == 0:
+            game_over = True
+            show_go_screen(screen, "DRAW!", running)
 
 
 '''
@@ -153,6 +197,30 @@ def drawPieces(screen, board):
             piece = board[r][c]
             if piece != "--":
                 screen.blit(IMAGE[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE + SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+'''this draw endgame screen'''
+
+
+def show_go_screen(screen, turnWin, running):
+    waiting = True
+    screen.fill(p.Color("white"))
+    TitleFont = p.font.SysFont("monospace", 40)
+    labelFont = p.font.SysFont("monospace", 15)
+    # render text
+    labelTitle = TitleFont.render(turnWin, True, p.Color("black"))
+    screen.blit(labelTitle, (SQ_SIZE / 2, HEIGHT / 4))
+    labelReset = labelFont.render("press any key to reset board", True, p.Color("black"))
+    screen.blit(labelReset, (SQ_SIZE / 2, HEIGHT / 4 + 50))
+    clock = p.time.Clock()
+    p.display.flip()
+    while waiting:
+        clock.tick(MAX_FPS)
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                p.quit()
+            if event.type == p.KEYDOWN:
+                waiting = False
 
 
 if __name__ == '__main__':

@@ -43,6 +43,21 @@ class GameState():
     def getSizeBoard(self):
         return self.currentSize
 
+    ''' check current are endgame or not'''
+
+    def checkEndGame(self):
+        whitePawn = self.currentSize - 1
+        blackPawn = self.currentSize - 1
+        for r in range(len(self.board)):
+            for c in range(len(self.board[r])):
+                if self.board[r][c] == "wp":
+                    whitePawn -= 1
+                elif self.board[r][c] == "bp":
+                    blackPawn -= 1
+        return True if (whitePawn == 3 or blackPawn == 3) else False
+
+    '''return all move possible for Player '''
+
     def getValidMoves(self):
         return self.getAllPossibleMoves()
 
