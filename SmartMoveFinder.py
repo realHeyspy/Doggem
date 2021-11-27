@@ -136,12 +136,12 @@ class DoggemMinMax():
         for move in validMoves:
             board = Board(gs.board, (move.startRow, move.startCol), (move.endRow, move.endCol)).getBoard()
             if turned:
-                maxval = self.maxVal(board, depth - 1, "wp")
+                maxval = self.maxVal(board, depth - 1, "bp")
                 if vals <= maxval:
                     vals = maxval
                     bestMove = move
             else:
-                minval = self.minVal(board, depth - 1, "bp")
+                minval = self.minVal(board, depth - 1, "wp")
                 if vals >= minval:
                     vals = minval
                     bestMove = move
